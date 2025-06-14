@@ -1,9 +1,15 @@
 import { flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, Row, useReactTable } from "@tanstack/react-table";
-import type { ColumnDef, Table } from '@tanstack/react-table';
+import type { ColumnDef, ColumnFilter, RowSelectionState, Table } from '@tanstack/react-table';
 import { useVirtualizer, VirtualItem, Virtualizer } from "@tanstack/react-virtual";
-import { FC, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { fetchSatellites } from "./apiUtils";
 import { useQuery } from "@tanstack/react-query";
+import FilterPopover from "../filter-popover";
+import { extractValues } from "./utils";
+import TableSkeleton from "./TableSkeleton";
+import { Checkbox } from "@mui/material";
+
+type FilterMap = Record<string, string[]>;
 
 interface SatelliteData {
   noradCatId: string;
@@ -27,7 +33,7 @@ function TableBody({ table, tableContainerRef }: TableBodyProps) {
 
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     count: rows.length,
-    estimateSize: () => 33,
+    estimateSize: () => 60,
     getScrollElement: () => tableContainerRef.current,
     measureElement:
       typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
@@ -78,10 +84,11 @@ function TableBodyRow({ row, virtualRow, rowVirtualizer }: TableBodyRowProps) {
         position: 'absolute',
         transform: `translateY(${virtualRow.start}px)`,
         width: '100%',
+        height: `${virtualRow.size}px`,
       }}
     >
       {row.getVisibleCells().map(cell => (
-        <td className="row" key={cell.id} style={{ display: 'flex', width: cell.column.getSize() }}>
+        <td className="row" key={cell.id} style={{ width: cell.column.getSize() }}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}
@@ -89,28 +96,93 @@ function TableBodyRow({ row, virtualRow, rowVirtualizer }: TableBodyRowProps) {
   );
 }
 
-const Table: FC = () => {
+const VirtualizedTable: FC = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [inputValue, setInputValue] = useState("");
+    const [appliedFilters, setAppliedFilters] = useState<FilterMap>({});
+    const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const selectedCount = Object.keys(rowSelection).length;
+    console.log(rowSelection)
 
     const { data: satelliteData, isLoading } = useQuery({
         queryKey: ['satellites'],
         queryFn: fetchSatellites,
         staleTime: 1000 * 60 * 5,
-        refetchOnWindowFocus: false,
     });
+
+    function getFacetCounts<T>(
+        rows: Row<T>[],
+        accessorKey: keyof T,
+        extractor?: (value: any) => string[]
+        ): Record<string, number> {
+        const counts: Record<string, number> = {};
+
+        for (const row of rows) {
+            const rawValue = row.getValue(accessorKey as string);
+            const values = extractor ? extractor(rawValue) : [rawValue];
+
+            for (const val of values) {
+            if (val !== undefined && val !== null) {
+                const key = String(val);
+                counts[key] = (counts[key] || 0) + 1;
+            }
+            }
+        }
+
+        return counts;
+    }
+
+
+    useEffect(() => {
+        const activeFilters: ColumnFilter[] = Object.entries(appliedFilters).map(([id, value]) => ({
+            id,
+            value,
+        }));
+        setColumnFilters(activeFilters);
+    }, [appliedFilters]);
+
+    const multiSelectFilter = (row: Row<SatelliteData>, columnId: string, filterValue: string[]) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        const cellValue = row.getValue<string>(columnId);
+        if(columnId === 'objectType') {
+            return filterValue.includes(cellValue);
+        } else {
+            const values = extractValues(cellValue);
+            return values.some((value) => filterValue.includes(value));
+        }
+    };
 
     const columns = useMemo<ColumnDef<SatelliteData>[]>(
     () => [
+        {
+            id: 'select',
+            header: () => null,
+            cell: ({ row }) => (
+                <Checkbox
+                    sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                        color: "white",
+                        },
+                        "& .MuiSvgIcon-root": {
+                        backgroundColor: "black",
+                        borderRadius: "4px",
+                        },
+                    }}
+                    checked={row.getIsSelected()}
+                    onChange={row.getToggleSelectedHandler()}
+                    disabled={
+                        !row.getIsSelected() && Object.keys(table.getState().rowSelection).length >= 10
+                    }
+                />
+            ),
+            size: 70,
+        },
         { 
             accessorKey: 'noradCatId', 
             header: 'Norad Cat ID', 
             enableGlobalFilter: true,
-            cell: ({ getValue }) => getValue() || '-',
-        },
-        { 
-            accessorKey: 'intlDes', 
-            header: 'Intl Des',
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
@@ -125,18 +197,9 @@ const Table: FC = () => {
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
-            accessorKey: 'decayDate', 
-            header: 'Decay Date',
-            cell: ({ getValue }) => getValue() || '-',
-        },
-        { 
             accessorKey: 'objectType', 
             header: 'Object Type',
-            cell: ({ getValue }) => getValue() || '-',
-        },
-        { 
-            accessorKey: 'launchSiteCode', 
-            header: 'Launch Site Code',
+            filterFn: multiSelectFilter,
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
@@ -147,10 +210,11 @@ const Table: FC = () => {
         { 
             accessorKey: 'orbitCode', 
             header: 'Orbit Code',
+            filterFn: multiSelectFilter,
             cell: ({ getValue }) => getValue() || '-',
         },
     ],
-    []
+    [selectedCount]
   );
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -160,33 +224,65 @@ const Table: FC = () => {
         columns,
         state: {
             globalFilter,
+            columnFilters,
+            rowSelection,
         },
+        getRowId: row => row.noradCatId,
         onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
+        onRowSelectionChange: setRowSelection,
+        enableRowSelection: true,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         debugTable: true,
     });
 
+    const objectTypeCounts = useMemo(
+        () => {
+            if(!satelliteData) return null;
+            return getFacetCounts(table.getFilteredRowModel().rows, 'objectType')
+        },
+        [globalFilter, columnFilters, satelliteData]
+    );
+
+    const orbitCodeCounts = useMemo(
+        () => {
+            if(!satelliteData) return null;
+            return getFacetCounts(table.getFilteredRowModel().rows, 'orbitCode', extractValues)
+        },
+        [globalFilter, columnFilters, satelliteData]
+    );
+
     return (
     <div className="table-wrapper">
-        <input 
-            name="search-bar"
-            className="search-bar"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                    setGlobalFilter(inputValue);
-                }
-            }}
-            placeholder="Search for Object Type / Orbit Code"
-        />
+        <div className="filter-container">
+            <input 
+                name="search-bar"
+                className="search-bar"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        setGlobalFilter(inputValue);
+                    }
+                }}
+                placeholder="Search for Object Type / Orbit Code"
+            />
+            <FilterPopover
+                appliedFilters={appliedFilters}
+                onApplyFilters={(newFilters) => setAppliedFilters(newFilters)}
+                count={{ objectType: objectTypeCounts, orbitCode: orbitCodeCounts }}
+            />
+        </div>
       <div
         className="container"
         ref={tableContainerRef}
-        style={{ height: 'clamp(300px, 80vh, 700px)' }}
+        style={{ height: 'clamp(300px, 70vh, 700px)' }}
       >
+        {isLoading ? (
+            <TableSkeleton columnsCount={columns.length} />
+        ) : (
         <table className="table">
           <thead 
             className="table-header-container" 
@@ -214,33 +310,12 @@ const Table: FC = () => {
               </tr>
             ))}
           </thead>
-          {isLoading ? (
-            <tbody>
-              {Array.from({ length: 15 }).map((_, idx) => (
-                <tr key={idx} style={{ display: 'flex', height: '33px', width: '100%' }}>
-                  {columns.map((_, colIdx) => (
-                    <td
-                      key={colIdx}
-                      style={{
-                        flex: 1,
-                        backgroundColor: '#eee',
-                        margin: '2px',
-                        borderRadius: '4px',
-                        height: '80%',
-                        animation: 'pulse 1.5s infinite ease-in-out',
-                      }}
-                    />
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          ) : (
-            <TableBody table={table} tableContainerRef={tableContainerRef} />
-          )}
+          <TableBody table={table} tableContainerRef={tableContainerRef} />
         </table>
+        )}
       </div>
     </div>
   );
 }
 
-export default Table;
+export default VirtualizedTable;

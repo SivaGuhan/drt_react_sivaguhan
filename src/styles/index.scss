@@ -72,3 +72,27 @@ time, mark, audio, video {
   all: unset;
   box-sizing: border-box;
 }
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  border-radius: 20px;
+  background-image: linear-gradient(
+    $Black200,
+    $Black300,
+    $Black400
+  );
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}

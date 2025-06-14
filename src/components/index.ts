@@ -1,5 +1,7 @@
-import Table from "./table";
+import VirtualizedTable from "./table";
+import FilterPopover from "./filter-popover";
 
 export {
-    Table
+    VirtualizedTable,
+    FilterPopover,
 }

@@ -5,16 +5,23 @@
     @extend .full-height;
     @extend .d-flex, .flex-column, .gap-4;
     
-    .search-bar {
-        @extend .p-4;
-        border: 0.0225rem solid $White;
-        border-radius: 24px;
-        width: 30%;
+    .filter-container {
+        @extend .d-flex, .gap-8, .align-center, .py-4;
+
+        .search-bar {
+            @extend .p-4;
+            border: 0.0225rem solid $White;
+            border-radius: 24px;
+            flex: 1;
+            max-width: 50%;
+        }
     }
 
     .container {
         @extend .overflow-auto, .pos-relative;
         border: 0.0225rem solid $Black400;
+        max-width: 100%;
+        width: fit-content;
 
         .table {
             @extend .d-grid;
@@ -46,8 +53,22 @@
         }
 
         .row {
-            @extend .px-2, .py-1;
+            @extend .px-2, .py-1, .full-height;
+            @extend .d-flex, .align-center;
             color: $Black200;
+            margin: auto 0;
         }
     }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
 }

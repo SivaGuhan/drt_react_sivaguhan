@@ -1,0 +1,46 @@
+@use 'app/styles/utilities' as *;
+@use 'app/styles/colors' as *;
+
+.filter-popover-container {
+    @extend .full-height;
+    @extend .d-flex, .align-center;
+    .trigger-button {
+        height: 80%;
+        background-color: $Black600;
+
+        &:hover {
+            background-color: $Black400;
+        }
+    }
+}
+
+.custom-popover {
+    color: $Black200 !important;
+    background-color: $Black800 !important;
+    overflow: hidden !important;
+}
+
+.popover-container {
+    @extend .d-flex, .flex-column, .gap-4;
+    height: 100%;
+    max-height: 50vh;
+    width: 300px;
+
+    .filter-body {
+        @extend .d-flex, .flex-column, .gap-4;
+        @extend .p-4;
+        flex: 1;
+        overflow: auto;
+    }
+
+    .filter-group-section {
+        .filter-name {
+            text-transform: uppercase;
+        }
+
+        .filter-options-list {
+            @extend .d-flex, .gap-4, .flex-wrap;
+            @extend .mt-2;
+        }
+    }
+}
