@@ -33,6 +33,7 @@ const TableSkeleton: FC<{ columnsCount: number; rowsCount?: number }> = ({ colum
                   margin: '2px',
                   borderRadius: '4px',
                   height: '80%',
+                  width: '150px',
                   animation: 'pulse 1.5s infinite ease-in-out',
                 }}
               />

@@ -1,19 +1,16 @@
-import { VirtualizedTable } from "../components"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-
-const queryClient = new QueryClient();
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AssetCreation from "./asset-creation";
+import AssetCheckout from "./asset-checkout";
 
 function App() {
 
   return (
-    <main className="main-container">
-      <h1 className="main-heading">Create My Asset list</h1>
-      <section className="table-wrapper-container">
-        <QueryClientProvider client={queryClient}>
-          <VirtualizedTable />
-        </QueryClientProvider>
-      </section>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AssetCreation />} />
+        <Route path="/checkout" element={<AssetCheckout />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

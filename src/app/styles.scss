@@ -1,17 +1,2 @@
-@use 'app/styles/utilities' as *;
-@use 'app/styles/colors' as *;
-
-.main-container {
-    @extend .full-content, .p-8;
-    @extend .d-flex, .flex-column, .gap-4;
-
-    .main-heading {
-        @extend .py-6;
-        font-size: 2rem;
-    }
-
-    .table-wrapper-container {
-        @extend .full-width;
-        flex: 1;
-    }
-}
+@use './asset-creation/style.scss' as asset-creation;
+@use './asset-checkout/style.scss' as asset-checkout;
