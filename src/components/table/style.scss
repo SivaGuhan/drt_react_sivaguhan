@@ -1,0 +1,53 @@
+@use 'app/styles/utilities' as *;
+@use 'app/styles/colors' as *;
+
+.table-wrapper {
+    @extend .full-height;
+    @extend .d-flex, .flex-column, .gap-4;
+    
+    .search-bar {
+        @extend .p-4;
+        border: 0.0225rem solid $White;
+        border-radius: 24px;
+        width: 30%;
+    }
+
+    .container {
+        @extend .overflow-auto, .pos-relative;
+        border: 0.0225rem solid $Black400;
+
+        .table {
+            @extend .d-grid;
+        }
+    }
+
+    .table-header-container {
+        @extend .d-grid, .pos-sticky;
+        top: 0;
+        background-color: $Black600;
+        height: 3.5rem;
+        z-index: 1;
+
+        .column {
+            @extend .px-2, .py-1, .font-weight-bold;
+            margin: auto 0;
+        }
+    }
+
+    .table-body-container {
+
+        .table-row-wrapper {
+            @extend .py-4;
+            outline: 0.0225rem solid $Black400;
+
+            &:hover {
+                background-color: $Black600;
+            }
+        }
+
+        .row {
+            @extend .px-2, .py-1;
+            color: $Black200;
+        }
+    }
+}

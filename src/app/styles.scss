@@ -1,0 +1,16 @@
+@use 'app/styles/utilities' as *;
+@use 'app/styles/colors' as *;
+
+.main-container {
+    @extend .full-content, .p-4;
+    @extend .d-flex, .flex-column, .gap-4;
+
+    .main-heading {
+        font-size: 2rem;
+    }
+
+    .table-wrapper-container {
+        @extend .full-width;
+        flex: 1;
+    }
+}
