@@ -27,14 +27,20 @@ const AssetCheckout: FC = () => {
     return (
         <div className="asset-checkout-container">
             <h1 className="main-heading">Your Asset items</h1>
-            <section className="asset-list-container">
-            {assetList.map((item: SatelliteData) => (
-                <div key={item.noradCatId} className="asset-item-wrapper">
-                    <p className="norad-cat-id">{item.noradCatId}</p>
-                    <p className="asset-name">{item.name}</p>
+            {assetList.length ? (
+                <section className="asset-list-container">
+                {assetList.map((item: SatelliteData) => (
+                    <div key={item.noradCatId} className="asset-item-wrapper">
+                        <p className="norad-cat-id">{item.noradCatId}</p>
+                        <p className="asset-name">{item.name}</p>
+                    </div>
+                ))}
+                </section>
+            ) : (
+                <div className="asset-placeholder">
+                    <p className="placeholder-test">Looks like you don't have any assets. Go back to create them</p>
                 </div>
-            ))}
-            </section>
+            )}
             <div className="footer-container">
                 <Button 
                     type="button" 

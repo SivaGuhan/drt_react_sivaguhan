@@ -12,6 +12,12 @@
         font-size: 2rem;
     }
 
+    .asset-placeholder {
+        height: 50%;
+        @extend .d-flex, .align-center, .justify-center;
+        font-size: 1.5rem;
+    }
+
     .asset-list-container {
         @extend .full-width, .overflow-auto;
         display: grid;
