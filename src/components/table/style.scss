@@ -28,6 +28,22 @@
         }
     }
 
+    .table-error-container {
+        @extend .d-flex, .flex-column, .align-center, .justify-center, .gap-4;
+        width: 80vw;
+        @extend .full-content;
+
+        .table-error-text {
+            font-size: 1.5rem;
+        }
+
+        .retry-button {
+            font-family: $font-family-base;
+            color: $Teal400;
+            border: 0.0225rem solid $Teal400;
+        }
+    }
+
     .table-header-container {
         @extend .d-grid, .pos-sticky;
         top: 0;

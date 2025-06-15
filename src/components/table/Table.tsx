@@ -121,10 +121,14 @@ const VirtualizedTable: FC = () => {
 
     const navigate = useNavigate();
 
-    const { data: satelliteData, isLoading } = useQuery({
+    const { data: satelliteData, isLoading, isError, refetch } = useQuery({
         queryKey: ['satellites'],
         queryFn: fetchSatellites,
         staleTime: 1000 * 60 * 5,
+        retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
     });
 
     function getFacetCounts<T>(
@@ -306,6 +310,17 @@ const VirtualizedTable: FC = () => {
       >
         {isLoading ? (
             <TableSkeleton columnsCount={columns.length} />
+        ) : isError ? (
+          <div className="table-error-container">
+            <p className="table-error-text">Something went wrong!! Please retry!!</p>
+            <Button 
+              variant="outlined" 
+              onClick={() => refetch()} 
+              className="retry-button"
+            >
+              Retry
+            </Button>
+          </div>
         ) : (
         <table className="table">
           <thead 
