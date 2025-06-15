@@ -115,6 +115,9 @@ const VirtualizedTable: FC = () => {
     const [inputValue, setInputValue] = useState("");
     const [appliedFilters, setAppliedFilters] = useState<FilterMap>({});
     const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+    const [sorting, setSorting] = useState([
+      { id: 'noradCatId', desc: false },
+    ]);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>(() => {
         const stored = localStorage.getItem('assetItems');
         if (!stored) return {};
@@ -215,34 +218,40 @@ const VirtualizedTable: FC = () => {
             accessorKey: 'noradCatId', 
             header: 'Norad Cat ID', 
             enableGlobalFilter: true,
+            enableSorting: true,
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
             accessorKey: 'name', 
             header: 'Name', 
             enableGlobalFilter: true,
+            enableSorting: true,
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
             accessorKey: 'launchDate', 
             header: 'Launch Date',
+            enableSorting: true,
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
             accessorKey: 'objectType', 
             header: 'Object Type',
             filterFn: multiSelectFilter,
+            enableSorting: true,
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
             accessorKey: 'countryCode', 
             header: 'Country Code',
+            enableSorting: true,
             cell: ({ getValue }) => getValue() || '-',
         },
         { 
             accessorKey: 'orbitCode', 
             header: 'Orbit Code',
             filterFn: multiSelectFilter,
+            enableSorting: false,
             cell: ({ getValue }) => getValue() || '-',
         },
     ],
@@ -263,16 +272,18 @@ const VirtualizedTable: FC = () => {
             globalFilter,
             columnFilters,
             rowSelection,
+            sorting,
         },
         globalFilterFn,
-        getRowId: row => row.noradCatId,
         onGlobalFilterChange: setGlobalFilter,
         onColumnFiltersChange: setColumnFilters,
         onRowSelectionChange: setRowSelection,
-        enableRowSelection: true,
+        onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getRowId: row => row.noradCatId,
+        enableRowSelection: true,
         debugTable: true,
     });
 
@@ -360,7 +371,7 @@ const VirtualizedTable: FC = () => {
                       }}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{ asc: ' 🔼', desc: ' 🔽' }[header.column.getIsSorted() as string] ?? null}
+                      {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   </th>
                 ))}
