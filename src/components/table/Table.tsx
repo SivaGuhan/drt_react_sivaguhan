@@ -1,5 +1,18 @@
-import { flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, Row, useReactTable } from "@tanstack/react-table";
-import type { ColumnDef, ColumnFilter, RowSelectionState, Table } from '@tanstack/react-table';
+import { 
+  flexRender, 
+  getCoreRowModel, 
+  getFilteredRowModel, 
+  getSortedRowModel, 
+  Row, 
+  useReactTable 
+} from "@tanstack/react-table";
+import type { 
+  ColumnDef, 
+  ColumnFilter, 
+  FilterFn, 
+  RowSelectionState, 
+  Table 
+} from '@tanstack/react-table';
 import { useVirtualizer, VirtualItem, Virtualizer } from "@tanstack/react-virtual";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { fetchSatellites } from "./apiUtils";
@@ -153,7 +166,6 @@ const VirtualizedTable: FC = () => {
         return counts;
     }
 
-
     useEffect(() => {
         const activeFilters: ColumnFilter[] = Object.entries(appliedFilters).map(([id, value]) => ({
             id,
@@ -239,6 +251,11 @@ const VirtualizedTable: FC = () => {
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
+    const globalFilterFn: FilterFn<SatelliteData> = (row, columnId, filterValue) => {
+      const value = row.getValue(columnId);
+      return String(value).toLowerCase().includes(filterValue.toLowerCase());
+    };
+
     const table = useReactTable({
         data: satelliteData,
         columns,
@@ -247,6 +264,7 @@ const VirtualizedTable: FC = () => {
             columnFilters,
             rowSelection,
         },
+        globalFilterFn,
         getRowId: row => row.noradCatId,
         onGlobalFilterChange: setGlobalFilter,
         onColumnFiltersChange: setColumnFilters,
