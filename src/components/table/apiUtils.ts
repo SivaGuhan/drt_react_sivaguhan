@@ -1,5 +1,5 @@
 export const fetchSatellites = async () => {
-  const baseUrl = 'https://backend.digantara.dev/v1/satellites';
+  const baseUrl = `${import.meta.env.VITE_API_ENDPOINT}/v1/satellites`;
   const params = new URLSearchParams({
     objectTypes: 'ROCKET BODY,DEBRIS,UNKNOWN,PAYLOAD',
     attributes: [

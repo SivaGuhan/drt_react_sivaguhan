@@ -267,17 +267,9 @@ const VirtualizedTable: FC = () => {
     const objectTypeCounts = useMemo(
         () => {
             if(!satelliteData) return null;
-            return getFacetCounts(table.getFilteredRowModel().rows, 'objectType')
+            return getFacetCounts(table.getCoreRowModel().rows, 'objectType')
         },
-        [globalFilter, columnFilters, satelliteData]
-    );
-
-    const orbitCodeCounts = useMemo(
-        () => {
-            if(!satelliteData) return null;
-            return getFacetCounts(table.getFilteredRowModel().rows, 'orbitCode', extractValues)
-        },
-        [globalFilter, columnFilters, satelliteData]
+        [satelliteData]
     );
 
     const handleProceed = () => {
@@ -303,7 +295,7 @@ const VirtualizedTable: FC = () => {
             <FilterPopover
                 appliedFilters={appliedFilters}
                 onApplyFilters={(newFilters) => setAppliedFilters(newFilters)}
-                count={{ objectType: objectTypeCounts, orbitCode: orbitCodeCounts }}
+                count={{ objectType: objectTypeCounts }}
                 disabled={isLoading}
             />
         </div>
