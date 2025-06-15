@@ -17,8 +17,10 @@ This project uses modern tooling, component libraries, and follows best practice
 # ⚙️ SETUP
 Clone the repository and navigate to the project directory:
 
+```bash
 git clone https://github.com/SivaGuhan/drt_react_sivaguhan.git
 cd drt_react_sivaguhan
+```
 
 # 🧱 Prerequisites
 
@@ -27,16 +29,22 @@ cd drt_react_sivaguhan
 
 # 📦 Installation
 
+```bash
 npm install
+```
 
 # 🔐 Creating env files
 
 Create a .env file in the root of the project with the following:
 
+```bash
 VITE_API_ENDPOINT='https://backend.digantara.dev'
+```
 
 # 🧪 Run in Development
 
 After the above steps, run
 
+```bash
 npm run dev
+```
