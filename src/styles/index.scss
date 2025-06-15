@@ -38,31 +38,25 @@ body {
 
 @media (max-width: 1200px) {
   :root {
-    font-size: 0.9375em;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 992px) {
   :root {
-    font-size: 0.875em;
+    font-size: 11px;
   }
 }
 
 @media (max-width: 768px) {
   :root {
-    font-size: 0.8125em;
+    font-size: 10px;
   }
 }
 
 @media (max-width: 576px) {
   :root {
-    font-size: 0.75em;
-  }
-}
-
-@media (max-width: 456px) {
-  :root {
-    font-size: 0.55em;
+    font-size: 12px;
   }
 }
 
@@ -87,9 +81,9 @@ time, mark, audio, video {
   background-clip: padding-box;
   border-radius: 20px;
   background-image: linear-gradient(
-    $Black200,
-    $Black300,
-    $Black400
+    $Teal200,
+    $Teal300,
+    $Teal400
   );
 }
 

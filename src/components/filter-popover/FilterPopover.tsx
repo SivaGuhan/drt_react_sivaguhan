@@ -60,7 +60,8 @@ const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters,
   };
 
   const handleClear = () => {
-    setLocalFilters({});
+    onApplyFilters({});
+    setAnchorEl(null);
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
