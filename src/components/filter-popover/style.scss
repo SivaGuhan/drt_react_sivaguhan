@@ -6,6 +6,7 @@
     @extend .d-flex, .align-center;
     .trigger-button {
         height: 80%;
+        font-family: $font-family-base;
         background-color: $Black600;
 
         &:hover {
@@ -59,10 +60,12 @@
         border-top: 0.0225rem solid $Black400;
 
         .apply-button {
+            font-family: $font-family-base;
             background-color: $Teal400;
         }
 
         .clear-button {
+            font-family: $font-family-base;
             color: $White;
             border-color: $Black400;
         }
