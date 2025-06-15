@@ -3,10 +3,10 @@
 
 .table-wrapper {
     @extend .full-height;
-    @extend .d-flex, .flex-column, .gap-4;
+    @extend .d-flex, .flex-column, .gap-8;
     
     .filter-container {
-        @extend .d-flex, .gap-8, .align-center, .py-4;
+        @extend .d-flex, .gap-8, .align-center;
 
         .search-bar {
             @extend .p-4;
@@ -57,6 +57,12 @@
             @extend .d-flex, .align-center;
             color: $Black200;
             margin: auto 0;
+        }
+    }
+
+    .table-footer-container {
+        .proceed-button {
+            background-color: $Teal400;
         }
     }
 }

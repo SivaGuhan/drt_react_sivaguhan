@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Popover, Button, Checkbox } from "@mui/material";
 
 type FilterMap = Record<string, string[]>;
@@ -6,7 +6,8 @@ type FilterMap = Record<string, string[]>;
 interface FilterPopoverProps {
   appliedFilters: FilterMap;
   onApplyFilters: (filters: FilterMap) => void;
-  count: Record<string, Record<string, number> | null>
+  count: Record<string, Record<string, number> | null>;
+  disabled?: boolean;
 }
 
 const filters = [
@@ -25,7 +26,7 @@ const filters = [
   },
 ];
 
-const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters, count }) => {
+const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters, count, disabled }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [localFilters, setLocalFilters] = useState<FilterMap>({});
 
@@ -59,12 +60,16 @@ const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters,
   };
 
   const handleClear = () => {
-    setLocalFilters({ ...appliedFilters });
+    setLocalFilters({});
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
+
+  const totalFilterCount = useMemo(() => {
+    return Object.values(appliedFilters).reduce((acc, val) => acc + Object.values(val).length, 0);
+  }, [appliedFilters])
 
   return (
     <div className="filter-popover-container">
@@ -73,8 +78,12 @@ const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters,
         variant="contained"
         onClick={handleClick}
         className="trigger-button"
+        disabled={disabled}
       >
-        Filter
+        <div className="d-flex gap-2 align-center">
+          <p>Filter</p>
+          {totalFilterCount ? <span className="total-filter-count">{totalFilterCount}</span> : null}
+        </div>
       </Button>
 
       <Popover
@@ -98,10 +107,10 @@ const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters,
                         sx={{
                           color: "white",
                           "&.Mui-checked": {
-                            color: "white",
+                            color: "#4db6ac",
                           },
                           "& .MuiSvgIcon-root": {
-                            backgroundColor: "black",
+                            backgroundColor: "#121212",
                             borderRadius: "4px",
                           },
                         }}
@@ -123,10 +132,10 @@ const FilterPopover: FC<FilterPopoverProps> = ({ appliedFilters, onApplyFilters,
             ))}
           </div>
           <section className="filter-footer-container">
-            <Button variant="contained" onClick={handleApply}>
+            <Button variant="contained" className="apply-button" onClick={handleApply}>
               Apply
             </Button>
-            <Button variant="outlined" onClick={handleClear}>
+            <Button variant="outlined" className="clear-button" onClick={handleClear}>
               Clear
             </Button>
           </section>

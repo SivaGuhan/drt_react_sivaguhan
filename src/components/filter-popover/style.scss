@@ -11,6 +11,15 @@
         &:hover {
             background-color: $Black400;
         }
+
+        .total-filter-count {
+            width: 20px;
+            height: 20px;
+            @extend .d-flex, .align-center, .justify-center;
+            @extend .p-1;
+            background-color: $Teal300;
+            border-radius: 50%;
+        }
     }
 }
 
@@ -41,6 +50,21 @@
         .filter-options-list {
             @extend .d-flex, .gap-4, .flex-wrap;
             @extend .mt-2;
+        }
+    }
+
+    .filter-footer-container {
+        @extend .p-4;
+        @extend .d-flex, .align-center, .gap-4;
+        border-top: 0.0225rem solid $Black400;
+
+        .apply-button {
+            background-color: $Teal400;
+        }
+
+        .clear-button {
+            color: $White;
+            border-color: $Black400;
         }
     }
 }

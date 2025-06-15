@@ -1,0 +1,49 @@
+@use 'app/styles/utilities' as *;
+@use 'app/styles/colors' as *;
+
+.asset-checkout-container {
+    @extend .full-height, .p-8;
+    @extend .d-flex, .flex-column, .gap-4;
+    width: 70%;
+    margin: 0 auto;
+
+    .main-heading {
+        @extend .py-6;
+        font-size: 2rem;
+    }
+
+    .asset-list-container {
+        @extend .full-width, .overflow-auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.5rem;
+
+        .asset-item-wrapper {
+            @extend .p-4;
+            @extend .d-flex, .flex-column, .gap-2;
+            border: 0.0225rem solid $Black400;
+            border-radius: 4px;
+            background-color: $Black600;
+
+            &:hover {
+                background-color: $Black400;
+            }
+
+            .norad-cat-id {
+                @extend .py-2;
+                font-weight: 500;
+            }
+
+            .asset-name {
+                @extend .py-2;
+            }
+        }
+    }
+
+    .footer-container {
+        @extend .py-4;
+        .back-button {
+            background-color: $Teal400;
+        }
+    }
+}

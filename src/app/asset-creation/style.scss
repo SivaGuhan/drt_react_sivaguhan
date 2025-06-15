@@ -2,7 +2,7 @@
 @use 'app/styles/colors' as *;
 
 .main-container {
-    @extend .full-content, .p-8;
+    @extend .full-content, .py-8, .px-16;
     @extend .d-flex, .flex-column, .gap-4;
 
     .main-heading {

@@ -7,7 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import FilterPopover from "../filter-popover";
 import { extractValues } from "./utils";
 import TableSkeleton from "./TableSkeleton";
-import { Checkbox } from "@mui/material";
+import { Button, Checkbox } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 type FilterMap = Record<string, string[]>;
 
@@ -101,9 +102,24 @@ const VirtualizedTable: FC = () => {
     const [inputValue, setInputValue] = useState("");
     const [appliedFilters, setAppliedFilters] = useState<FilterMap>({});
     const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>(() => {
+        const stored = localStorage.getItem('assetItems');
+        if (!stored) return {};
+        try {
+            const rows: SatelliteData[] = JSON.parse(stored);
+            return rows.reduce((acc: RowSelectionState, row: SatelliteData) => {
+                acc[row.noradCatId] = true;
+                return acc;
+            }, {});
+        } catch (error) {
+            console.error("Failed to parse stored selection", error);
+            return {};
+        }
+    });
+
     const selectedCount = Object.keys(rowSelection).length;
-    console.log(rowSelection)
+
+    const navigate = useNavigate();
 
     const { data: satelliteData, isLoading } = useQuery({
         queryKey: ['satellites'],
@@ -163,11 +179,11 @@ const VirtualizedTable: FC = () => {
                     sx={{
                         color: "white",
                         "&.Mui-checked": {
-                        color: "white",
+                            color: "#4db6ac",
                         },
                         "& .MuiSvgIcon-root": {
-                        backgroundColor: "black",
-                        borderRadius: "4px",
+                            backgroundColor: "#121212",
+                            borderRadius: "4px",
                         },
                     }}
                     checked={row.getIsSelected()}
@@ -238,6 +254,16 @@ const VirtualizedTable: FC = () => {
         debugTable: true,
     });
 
+    useEffect(() => {
+    if (!satelliteData) return;
+
+    const rows = Object.keys(rowSelection)
+        .map(id => table.getRowModel().rowsById[id]?.original)
+        .filter(Boolean) as SatelliteData[];
+
+    localStorage.setItem('assetItems', JSON.stringify(rows));
+    }, [rowSelection, satelliteData, table]);
+
     const objectTypeCounts = useMemo(
         () => {
             if(!satelliteData) return null;
@@ -254,6 +280,10 @@ const VirtualizedTable: FC = () => {
         [globalFilter, columnFilters, satelliteData]
     );
 
+    const handleProceed = () => {
+        navigate('/checkout');
+    }
+
     return (
     <div className="table-wrapper">
         <div className="filter-container">
@@ -268,17 +298,19 @@ const VirtualizedTable: FC = () => {
                     }
                 }}
                 placeholder="Search for Object Type / Orbit Code"
+                disabled={isLoading}
             />
             <FilterPopover
                 appliedFilters={appliedFilters}
                 onApplyFilters={(newFilters) => setAppliedFilters(newFilters)}
                 count={{ objectType: objectTypeCounts, orbitCode: orbitCodeCounts }}
+                disabled={isLoading}
             />
         </div>
       <div
         className="container"
         ref={tableContainerRef}
-        style={{ height: 'clamp(300px, 70vh, 700px)' }}
+        style={{ height: 'clamp(300px, 68vh, 700px)' }}
       >
         {isLoading ? (
             <TableSkeleton columnsCount={columns.length} />
@@ -313,6 +345,17 @@ const VirtualizedTable: FC = () => {
           <TableBody table={table} tableContainerRef={tableContainerRef} />
         </table>
         )}
+      </div>
+      <div className="table-footer-container">
+        <Button 
+            type="button" 
+            variant="contained" 
+            className="proceed-button"
+            onClick={handleProceed}
+            disabled={selectedCount === 0 || isLoading}
+        >
+                Proceed
+        </Button>
       </div>
     </div>
   );
